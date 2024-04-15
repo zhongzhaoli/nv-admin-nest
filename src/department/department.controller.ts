@@ -13,6 +13,8 @@ import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { Department } from './department.entity';
 import { GetDepartmentDto } from './dto/get-department.dto';
+import { User } from '../user/user.entity';
+import { Serialize } from '../decorators/serialize.decorators';
 
 @Controller('department')
 export class DepartmentController {
@@ -35,6 +37,12 @@ export class DepartmentController {
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Department> {
     return this.departmentService.findOne(id);
+  }
+
+  @Get(':userId/users')
+  @Serialize(User)
+  findUsers(@Param('userId') userId: string): Promise<User[]> {
+    return this.departmentService.findUsers(userId);
   }
 
   @Patch(':id')

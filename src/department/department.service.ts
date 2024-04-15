@@ -5,12 +5,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Department } from './department.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { GetDepartmentDto } from './dto/get-department.dto';
+import { User } from '../user/user.entity';
 
 @Injectable()
 export class DepartmentService {
   constructor(
     @InjectRepository(Department)
     private deptRepository: Repository<Department>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
   async create(createDepartmentDto: CreateDepartmentDto): Promise<Department> {
     const { name } = createDepartmentDto;
@@ -42,6 +45,13 @@ export class DepartmentService {
 
   findOne(id: string): Promise<Department> {
     return this.deptRepository.findOne({ where: { id } });
+  }
+
+  async findUsers(id: string): Promise<User[]> {
+    const users = await this.userRepository.find({
+      where: { department: { id } },
+    });
+    return users;
   }
 
   findOneByName(name: string): Promise<Department> {

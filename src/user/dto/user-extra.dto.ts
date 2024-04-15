@@ -1,11 +1,17 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class UserSetRoleDto {
-  @IsNotEmpty()
   @IsString()
   userId: string;
 
-  @IsNotEmpty()
   @IsString()
   roleId: string;
+}
+
+export class UserSetDeptDto {
+  @IsString()
+  userId: string;
+
+  @IsString()
+  deptId: string;
 }

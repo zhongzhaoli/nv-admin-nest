@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
 import { TimestampInterceptor } from '../interceptor/timestamp.interceptor';
 import { UserService } from './user.service';
-import { UserSetRoleDto } from './dto/user-extra.dto';
+import { UserSetDeptDto, UserSetRoleDto } from './dto/user-extra.dto';
 import { User } from './user.entity';
 
 @Controller('user')
@@ -12,5 +12,10 @@ export class UserExtraController {
   @Post('setRole')
   setRole(@Body() userSetRoleDto: UserSetRoleDto): Promise<User> {
     return this.userService.setRole(userSetRoleDto);
+  }
+
+  @Post('setDepartment')
+  setDepartment(@Body() userSetRoleDto: UserSetDeptDto): Promise<User> {
+    return this.userService.setDepartment(userSetRoleDto);
   }
 }

@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { IsEmail, IsPhoneNumber, Length } from 'class-validator';
+import { Department } from 'src/department/department.entity';
 
 @Entity()
 export class User {
@@ -43,6 +44,10 @@ export class User {
   @ManyToOne(() => Role, (role) => role.users)
   @JoinColumn({ name: 'roleId' })
   role: Role;
+
+  @ManyToOne(() => Department, (dept) => dept.users)
+  @JoinColumn({ name: 'deptId' })
+  department: Department;
 
   @CreateDateColumn({
     type: 'timestamp',

@@ -1,9 +1,10 @@
 import { Exclude } from 'class-transformer';
-import { IsNotEmpty, Length } from 'class-validator';
+import { User } from '../user/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -21,6 +22,9 @@ export class Department {
 
   @Column({ nullable: true })
   description: string;
+
+  @OneToMany(() => User, (user) => user.department)
+  users: User[];
 
   @CreateDateColumn({
     type: 'timestamp',

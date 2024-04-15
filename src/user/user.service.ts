@@ -8,14 +8,17 @@ import * as md5 from 'md5';
 import { GetUserDto } from './dto/get-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserLoginDto } from './dto/user-login.dto';
-import { UserSetRoleDto } from './dto/user-extra.dto';
+import { UserSetDeptDto, UserSetRoleDto } from './dto/user-extra.dto';
 import { Role } from 'src/role/role.entity';
+import { Department } from 'src/department/department.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Role) private roleRepository: Repository<Role>,
+    @InjectRepository(Department)
+    private deptRepository: Repository<Department>,
     private jwtService: JwtService,
   ) {}
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -54,6 +57,16 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) throw new BadRequestException('找不到此用户');
     const newUser = this.userRepository.merge(user, { role });
+    return this.userRepository.save(newUser);
+  }
+
+  async setDepartment(userSetRoleDto: UserSetDeptDto): Promise<User> {
+    const { userId, deptId } = userSetRoleDto;
+    const dept = await this.deptRepository.findOne({ where: { id: deptId } });
+    if (!dept) throw new BadRequestException('找不到此部门');
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new BadRequestException('找不到此用户');
+    const newUser = this.userRepository.merge(user, { department: dept });
     return this.userRepository.save(newUser);
   }
 
