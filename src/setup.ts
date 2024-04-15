@@ -8,10 +8,10 @@ export const setupApp = (app: INestApplication): void => {
   // 管道
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   // 过滤器
-  // app.useGlobalFilters(
-  //   new TypeormExceptionFilter(logger),
-  //   new AllExceptionFilter(logger),
-  // );
+  app.useGlobalFilters(
+    new TypeormExceptionFilter(logger),
+    new AllExceptionFilter(logger),
+  );
   // 拦截器
   app.useGlobalInterceptors(
     new ResponseInterceptor(),
