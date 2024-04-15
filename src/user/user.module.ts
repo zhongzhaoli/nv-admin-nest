@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { getEnvConfig } from '../utils/dotenv.helper';
 import { ConfigEnum } from '../enum/config.enum';
 import { JwtStrategy } from './jwt.strategy';
+import { UserExtraController } from './userExtra.controller';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { JwtStrategy } from './jwt.strategy';
       },
     }),
   ],
-  controllers: [UserController],
+  controllers: [UserController, UserExtraController],
   providers: [UserService, JwtStrategy],
 })
 export class UserModule {}

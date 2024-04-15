@@ -8,11 +8,14 @@ import * as md5 from 'md5';
 import { GetUserDto } from './dto/get-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserLoginDto } from './dto/user-login.dto';
+import { UserSetRoleDto } from './dto/user-extra.dto';
+import { Role } from 'src/role/role.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Role) private roleRepository: Repository<Role>,
     private jwtService: JwtService,
   ) {}
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -42,6 +45,16 @@ export class UserService {
 
   async getUserInfo(id: string): Promise<User> {
     return this.userRepository.findOne({ where: { id } });
+  }
+
+  async setRole(userSetRoleDto: UserSetRoleDto): Promise<User> {
+    const { userId, roleId } = userSetRoleDto;
+    const role = await this.roleRepository.findOne({ where: { id: roleId } });
+    if (!role) throw new BadRequestException('找不到此角色');
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new BadRequestException('找不到此用户');
+    const newUser = this.userRepository.merge(user, { role });
+    return this.userRepository.save(newUser);
   }
 
   async createToken(userId: string): Promise<string> {
