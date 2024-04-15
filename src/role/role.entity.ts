@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { IsNotEmpty, Length } from 'class-validator';
 
 @Entity()
 export class Role {
@@ -15,6 +16,8 @@ export class Role {
   id: string;
 
   @Column()
+  @IsNotEmpty()
+  @Length(1, 15)
   name: string;
 
   @Column()
