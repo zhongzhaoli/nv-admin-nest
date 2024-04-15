@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { IsEmail, IsPhoneNumber, Length } from 'class-validator';
 
 @Entity()
 export class User {
@@ -24,6 +25,18 @@ export class User {
 
   @Column()
   avatar: string;
+
+  @Column()
+  @Length(1, 10)
+  realName: string;
+
+  @Column()
+  @IsEmail()
+  email: string;
+
+  @Column()
+  @IsPhoneNumber('CN')
+  phone: string;
 
   @Column({ default: true })
   status: boolean;

@@ -7,6 +7,7 @@ import { User } from './user.entity';
 import * as md5 from 'md5';
 import { GetUserDto } from './dto/get-user.dto';
 import { JwtService } from '@nestjs/jwt';
+import { UserLoginDto } from './dto/user-login.dto';
 
 @Injectable()
 export class UserService {
@@ -23,6 +24,24 @@ export class UserService {
     };
     const newUser = this.userRepository.create(newCreateUserDto);
     return this.userRepository.save(newUser);
+  }
+
+  async login(userLoginDto: UserLoginDto): Promise<{ token: string }> {
+    const user = await this.userRepository.findOne({
+      where: {
+        username: userLoginDto.username,
+        password: md5(userLoginDto.password),
+      },
+    });
+    if (!user) throw new BadRequestException('用户名或密码错误');
+    const token = await this.createToken(user.id);
+    return {
+      token,
+    };
+  }
+
+  async getUserInfo(id: string): Promise<User> {
+    return this.userRepository.findOne({ where: { id } });
   }
 
   async createToken(userId: string): Promise<string> {
