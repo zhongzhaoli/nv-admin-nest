@@ -1,6 +1,8 @@
 import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { ResponseInterceptor } from './interceptor/response.interceptor';
 import { RequestInterceptor } from './interceptor/request.interceptor';
+import { TypeormExceptionFilter } from './filters/typeorm-exception.filter';
+import { AllExceptionFilter } from './filters/all-exception.filter';
 
 export const setupApp = (app: INestApplication): void => {
   // 日志模块
