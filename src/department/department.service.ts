@@ -1,26 +1,70 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Department } from './department.entity';
+import { DeleteResult, Repository } from 'typeorm';
+import { GetDepartmentDto } from './dto/get-department.dto';
 
 @Injectable()
 export class DepartmentService {
-  create(createDepartmentDto: CreateDepartmentDto) {
-    return 'This action adds a new department';
+  constructor(
+    @InjectRepository(Department)
+    private deptRepository: Repository<Department>,
+  ) {}
+  async create(createDepartmentDto: CreateDepartmentDto): Promise<Department> {
+    const { name } = createDepartmentDto;
+    const dept = await this.findOneByName(name);
+    if (dept) throw new BadRequestException('部门已存在');
+    const newDept = this.deptRepository.create(createDepartmentDto);
+    return this.deptRepository.save(newDept);
   }
 
-  findAll() {
-    return `This action returns all department`;
+  async findAll(
+    query: GetDepartmentDto,
+  ): Promise<{ list: Department[]; total: number }> {
+    const { limit, page, name } = query;
+    const take = limit || 10;
+    const skip = (page || 1 - 1) * take;
+    const list = await this.deptRepository.find({
+      where: name ? { name } : {},
+      skip,
+      take,
+    });
+    const total = await this.deptRepository.count({
+      where: name ? { name } : {},
+    });
+    return {
+      list,
+      total,
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} department`;
+  findOne(id: string): Promise<Department> {
+    return this.deptRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateDepartmentDto: UpdateDepartmentDto) {
-    return `This action updates a #${id} department`;
+  findOneByName(name: string): Promise<Department> {
+    return this.deptRepository.findOne({ where: { name } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} department`;
+  async update(
+    id: string,
+    updateDepartmentDto: UpdateDepartmentDto,
+  ): Promise<Department> {
+    const dept = await this.findOne(id);
+    if (!dept) throw new BadRequestException('找不到此部门');
+    const newUser = this.deptRepository.merge(dept, updateDepartmentDto);
+    return this.deptRepository.save(newUser);
+  }
+
+  async remove(id: string): Promise<any> {
+    const role = await this.findOne(id);
+    if (!role) throw new BadRequestException('找不到此部门');
+    const result: DeleteResult = await this.deptRepository.delete(id);
+    if (result.affected === 0) {
+      throw new BadRequestException(`删除失败`);
+    }
+    return {};
   }
 }
