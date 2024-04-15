@@ -19,10 +19,14 @@ export class User {
   username: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column()
   avatar: string;
+
+  @Column({ default: true })
+  status: boolean;
 
   @ManyToOne(() => Role, (role) => role.users)
   @JoinColumn({ name: 'roleId' })

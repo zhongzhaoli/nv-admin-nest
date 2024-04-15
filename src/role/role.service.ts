@@ -40,18 +40,18 @@ export class RoleService {
     return this.roleRepository.findOne({ where: { name } });
   }
 
-  findOne(id: number): Promise<Role> {
+  findOne(id: string): Promise<Role> {
     return this.roleRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, updateRoleDto: UpdateRoleDto): Promise<Role> {
+  async update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
     const role = await this.findOne(id);
     if (!role) throw new BadRequestException('角色不存在');
     const newUser = this.roleRepository.merge(role, updateRoleDto);
     return this.roleRepository.save(newUser);
   }
 
-  async remove(id: number): Promise<any> {
+  async remove(id: string): Promise<any> {
     const role = await this.findOne(id);
     if (!role) throw new BadRequestException('找不到此角色');
     const result: DeleteResult = await this.roleRepository.delete(id);
