@@ -6,12 +6,18 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { GetRoleDto } from './dto/get-role.dto';
+import { Role } from './role.entity';
+import { TimestampInterceptor } from 'src/interceptor/timestamp.interceptor';
 
 @Controller('role')
+@UseInterceptors(TimestampInterceptor)
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
@@ -21,12 +27,14 @@ export class RoleController {
   }
 
   @Get()
-  findAll() {
-    return this.roleService.findAll();
+  findAll(
+    @Query() query: GetRoleDto,
+  ): Promise<{ list: Role[]; total: number }> {
+    return this.roleService.findAll(query);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<Role> {
     return this.roleService.findOne(+id);
   }
 
