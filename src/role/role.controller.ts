@@ -14,7 +14,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { GetRoleDto } from './dto/get-role.dto';
 import { Role } from './role.entity';
-import { TimestampInterceptor } from 'src/interceptor/timestamp.interceptor';
+import { TimestampInterceptor } from '../interceptor/timestamp.interceptor';
 
 @Controller('role')
 @UseInterceptors(TimestampInterceptor)
