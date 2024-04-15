@@ -11,10 +11,10 @@ export const setupApp = (app: INestApplication): void => {
   //   new AllExceptionFilter(logger),
   // );
   // 拦截器
-  // app.useGlobalInterceptors(
-  //   new ResponseInterceptor(),
+  app.useGlobalInterceptors(
+    new ResponseInterceptor(),
   //   new RequestInterceptor(logger),
-  // );
+  );
   // 统一前缀
   app.setGlobalPrefix('api');
 };
