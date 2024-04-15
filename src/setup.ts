@@ -1,4 +1,6 @@
 import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
+import { ResponseInterceptor } from './interceptor/response.interceptor';
+import { RequestInterceptor } from './interceptor/request.interceptor';
 
 export const setupApp = (app: INestApplication): void => {
   // 日志模块
@@ -13,7 +15,7 @@ export const setupApp = (app: INestApplication): void => {
   // 拦截器
   app.useGlobalInterceptors(
     new ResponseInterceptor(),
-  //   new RequestInterceptor(logger),
+    new RequestInterceptor(logger),
   );
   // 统一前缀
   app.setGlobalPrefix('api');
