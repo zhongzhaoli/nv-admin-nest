@@ -13,10 +13,14 @@ export class Department {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  @IsNotEmpty()
-  @Length(1, 15)
+  @Column({ length: 15 })
   name: string;
+
+  @Column()
+  avatar: string;
+
+  @Column({ nullable: true })
+  description: string;
 
   @CreateDateColumn({
     type: 'timestamp',

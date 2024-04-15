@@ -8,19 +8,17 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { IsNotEmpty, Length } from 'class-validator';
+import { IsEmpty, IsNotEmpty, Length } from 'class-validator';
 
 @Entity()
 export class Role {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  @IsNotEmpty()
-  @Length(1, 15)
+  @Column({ length: 15 })
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   @OneToMany(() => User, (user) => user.role)

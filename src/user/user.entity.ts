@@ -26,15 +26,14 @@ export class User {
   @Column()
   avatar: string;
 
-  @Column()
-  @Length(1, 10)
+  @Column({ length: 20, nullable: true })
   realName: string;
 
-  @Column()
+  @Column({ nullable: true })
   @IsEmail()
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   @IsPhoneNumber('CN')
   phone: string;
 
