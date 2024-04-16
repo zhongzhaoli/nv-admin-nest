@@ -1,27 +1,46 @@
 import { Exclude } from 'class-transformer';
-import { User } from '../user/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export class Role {
+export class Route {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 15 })
+  @Column({ length: 20 })
   name: string;
 
-  @Column({ nullable: true })
-  description: string;
+  @Column({ length: 30 })
+  icon: string;
 
-  @OneToMany(() => User, (user) => user.role)
-  users: User[];
+  @Column({ length: 50 })
+  path: string;
+
+  @Column({ length: 150 })
+  component: string;
+
+  @Column({ default: false })
+  breadcrumbHidden: boolean;
+
+  @Column({ default: false })
+  affix: boolean;
+
+  @Column({ default: false })
+  hidden: boolean;
+
+  @Column({ default: false })
+  keepAlive: boolean;
+
+  @Column()
+  sort: number;
+
+  @Column({ enum: ['BUTTON', 'MENU', 'SINGLEMENU', 'CATA'] })
+  type: string;
 
   @CreateDateColumn({
     type: 'timestamp',
