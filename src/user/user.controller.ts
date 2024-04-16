@@ -21,6 +21,7 @@ import { GetUserDto } from './dto/get-user.dto';
 import { Serialize } from '../decorators/serialize.decorators';
 import { AuthGuard } from '@nestjs/passport';
 import { UserReq } from '../types/userReq.type';
+import { GetUserPipe } from './pipes/get-user.pipe';
 
 @Controller('user')
 @UseInterceptors(TimestampInterceptor)
@@ -46,7 +47,7 @@ export class UserController {
 
   @Get()
   findAll(
-    @Query() query: GetUserDto,
+    @Query(GetUserPipe) query: GetUserDto,
   ): Promise<{ list: User[]; total: number }> {
     return this.userService.findAll(query);
   }

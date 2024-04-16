@@ -15,6 +15,7 @@ import { Department } from './department.entity';
 import { GetDepartmentDto } from './dto/get-department.dto';
 import { User } from '../user/user.entity';
 import { Serialize } from '../decorators/serialize.decorators';
+import { GetDepartmentPipe } from './pipes/get-department.pipe';
 
 @Controller('department')
 export class DepartmentController {
@@ -29,7 +30,7 @@ export class DepartmentController {
 
   @Get()
   findAll(
-    @Query() query: GetDepartmentDto,
+    @Query(GetDepartmentPipe) query: GetDepartmentDto,
   ): Promise<{ list: Department[]; total: number }> {
     return this.departmentService.findAll(query);
   }

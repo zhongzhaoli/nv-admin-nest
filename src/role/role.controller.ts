@@ -15,6 +15,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { GetRoleDto } from './dto/get-role.dto';
 import { Role } from './role.entity';
 import { TimestampInterceptor } from '../interceptor/timestamp.interceptor';
+import { GetRolePipe } from './pipes/get-role.pipe';
 
 @Controller('role')
 @UseInterceptors(TimestampInterceptor)
@@ -28,7 +29,7 @@ export class RoleController {
 
   @Get()
   findAll(
-    @Query() query: GetRoleDto,
+    @Query(GetRolePipe) query: GetRoleDto,
   ): Promise<{ list: Role[]; total: number }> {
     return this.roleService.findAll(query);
   }

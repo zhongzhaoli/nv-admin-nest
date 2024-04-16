@@ -77,16 +77,16 @@ export class UserService {
   }
 
   async findAll(query: GetUserDto): Promise<{ list: User[]; total: number }> {
-    const { limit, page, username } = query;
+    const { limit, page } = query;
     const take = limit || 10;
     const skip = (page || 1 - 1) * take;
     const list = await this.userRepository.find({
-      where: username ? { username } : {},
+      where: query,
       skip,
       take,
     });
     const total = await this.userRepository.count({
-      where: username ? { username } : {},
+      where: query,
     });
     return {
       list,

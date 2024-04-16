@@ -26,16 +26,16 @@ export class DepartmentService {
   async findAll(
     query: GetDepartmentDto,
   ): Promise<{ list: Department[]; total: number }> {
-    const { limit, page, name } = query;
+    const { limit, page } = query;
     const take = limit || 10;
     const skip = (page || 1 - 1) * take;
     const list = await this.deptRepository.find({
-      where: name ? { name } : {},
+      where: query,
       skip,
       take,
     });
     const total = await this.deptRepository.count({
-      where: name ? { name } : {},
+      where: query,
     });
     return {
       list,

@@ -19,16 +19,16 @@ export class RoleService {
   }
 
   async findAll(query: GetRoleDto): Promise<{ list: Role[]; total: number }> {
-    const { limit, page, name } = query;
+    const { limit, page } = query;
     const take = limit || 10;
     const skip = (page || 1 - 1) * take;
     const list = await this.roleRepository.find({
-      where: name ? { name } : {},
+      where: query,
       skip,
       take,
     });
     const total = await this.roleRepository.count({
-      where: name ? { name } : {},
+      where: query,
     });
     return {
       list,
