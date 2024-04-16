@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { IsOptional } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -7,21 +8,31 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+export enum RouteType {
+  'BUTTON' = 'BUTTON',
+  'MENU' = 'MENU',
+  'SINGLEMENU' = 'SINGLEMENU',
+  'CATA' = 'CATA',
+}
+
 @Entity()
 export class Route {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  pid: number;
+  pid: string;
 
   @Column({ length: 20 })
   name: string;
 
-  @Column({ length: 30 })
+  @Column({ length: 15 })
+  title: string;
+
+  @Column({ length: 30, nullable: true })
   icon: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 100 })
   path: string;
 
   @Column({ length: 150 })
@@ -39,10 +50,10 @@ export class Route {
   @Column({ default: false })
   keepAlive: boolean;
 
-  @Column()
+  @Column({ default: 1 })
   sort: number;
 
-  @Column({ enum: ['BUTTON', 'MENU', 'SINGLEMENU', 'CATA'] })
+  @Column({ type: 'enum', enum: RouteType })
   type: string;
 
   @CreateDateColumn({
