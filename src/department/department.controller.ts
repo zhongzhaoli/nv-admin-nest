@@ -28,6 +28,15 @@ export class DepartmentController {
     return this.departmentService.create(createDepartmentDto);
   }
 
+  @Post(':id/addUser')
+  addUser(
+    @Param('id') id: string,
+    @Body() addUser: { userIds: string[] },
+  ): Promise<any> {
+    const { userIds } = addUser;
+    return this.departmentService.addUser(id, userIds);
+  }
+
   @Get()
   findAll(
     @Query(GetDepartmentPipe) query: GetDepartmentDto,
@@ -58,5 +67,13 @@ export class DepartmentController {
   @Delete(':id')
   remove(@Param('id') id: string): Promise<any> {
     return this.departmentService.remove(id);
+  }
+
+  @Delete(':deptId/users/:userId')
+  removeUser(
+    @Param('deptId') deptId: string,
+    @Param('userId') userId: string,
+  ): Promise<any> {
+    return this.departmentService.removeUser(deptId, userId);
   }
 }

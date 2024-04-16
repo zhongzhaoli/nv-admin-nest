@@ -82,6 +82,7 @@ export class UserService {
     const skip = (page || 1 - 1) * take;
     const list = await this.userRepository.find({
       where: query,
+      relations: ['department'],
       skip,
       take,
     });
