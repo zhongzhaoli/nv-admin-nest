@@ -12,6 +12,9 @@ export class Route {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column()
+  pid: number;
+
   @Column({ length: 20 })
   name: string;
 
