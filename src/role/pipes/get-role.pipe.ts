@@ -8,7 +8,7 @@ export class GetRolePipe implements PipeTransform {
     const screenData = excludeNullValue<GetRoleDto>(value);
     delete screenData.page;
     delete screenData.pageSize;
-    const pageData = { page: value.page, limit: value.pageSize };
+    const pageData = { page: +value.page, limit: +value.pageSize };
     return { pageData, screenData };
   }
 }

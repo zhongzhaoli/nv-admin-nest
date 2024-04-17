@@ -6,6 +6,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, In, Repository } from 'typeorm';
 import { Route } from '../route/route.entity';
 import { pageListDataProps } from '../types/pageListBody.type';
+import { formatDate } from '../utils/dateTime.helper';
+import { ResponsePageProps } from '../types/responsePage.type';
 
 @Injectable()
 export class RoleService {
@@ -38,9 +40,7 @@ export class RoleService {
     return this.roleRepository.save(role);
   }
 
-  async findAll(
-    query: pageListDataProps,
-  ): Promise<{ list: Role[]; total: number }> {
+  async findAll(query: pageListDataProps): Promise<ResponsePageProps<Role>> {
     const { screenData, pageData } = query;
     const take = pageData.limit || 10;
     const skip = ((pageData.page || 1) - 1) * take;
@@ -49,11 +49,16 @@ export class RoleService {
       skip,
       take,
     });
+    list.forEach((role) => {
+      role.createTime = formatDate(role.createTime) as unknown as Date;
+      role.updateTime = formatDate(role.updateTime) as unknown as Date;
+    });
     const total = await this.roleRepository.count({
       where: screenData,
     });
     return {
       list,
+      page: pageData.page || 1,
       total,
     };
   }

@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
 import { DepartmentModule } from './department/department.module';
 import { RouteModule } from './route/route.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { RouteModule } from './route/route.module';
     RoleModule,
     DepartmentModule,
     RouteModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [Logger],

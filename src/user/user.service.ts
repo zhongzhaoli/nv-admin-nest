@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as md5 from 'md5';
-import { GetUserDto, ScreenUserDto } from './dto/get-user.dto';
+import { ScreenUserDto } from './dto/get-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserSetDeptDto, UserSetRoleDto } from './dto/user-extra.dto';
@@ -13,6 +13,8 @@ import { Role } from '../role/role.entity';
 import { Department } from '../department/department.entity';
 import { routeTree, routeMap } from '../utils/route.helper';
 import { pageListDataProps } from '../types/pageListBody.type';
+import { formatDate } from '../utils/dateTime.helper';
+import { ResponsePageProps } from '../types/responsePage.type';
 
 @Injectable()
 export class UserService {
@@ -101,7 +103,7 @@ export class UserService {
 
   async findAll(
     query: pageListDataProps<ScreenUserDto>,
-  ): Promise<{ list: User[]; total: number }> {
+  ): Promise<ResponsePageProps<User>> {
     const { pageData, screenData } = query;
     const take = pageData.limit || 10;
     const skip = ((pageData.page || 1) - 1) * take;
@@ -111,11 +113,16 @@ export class UserService {
       skip,
       take,
     });
+    list.forEach((user) => {
+      user.createTime = formatDate(user.createTime) as unknown as Date;
+      user.updateTime = formatDate(user.updateTime) as unknown as Date;
+    });
     const total = await this.userRepository.count({
       where: screenData,
     });
     return {
       list,
+      page: pageData.page || 1,
       total,
     };
   }
@@ -138,7 +145,8 @@ export class UserService {
           where: { id: updateUserDto.deptId },
         }))) ||
       null;
-    const updateUser = { ...user, department };
+
+    const updateUser = { ...updateUserDto, department };
     const newUser = this.userRepository.merge(user, updateUser);
     return this.userRepository.save(newUser);
   }

@@ -14,7 +14,7 @@ export class GetUserPipe implements PipeTransform {
       }
       delete screenData.deptId;
     }
-    const pageData = { page: value.page, limit: value.pageSize };
+    const pageData = { page: +value.page, limit: +value.pageSize };
     return { pageData, screenData };
   }
 }
