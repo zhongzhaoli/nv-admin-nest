@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
+import { EditRoleRoutesDto, UpdateRoleDto } from './dto/update-role.dto';
 import { GetRoleDto } from './dto/get-role.dto';
 import { Role } from './role.entity';
 import { TimestampInterceptor } from '../interceptor/timestamp.interceptor';
@@ -25,6 +25,14 @@ export class RoleController {
   @Post()
   create(@Body() createRoleDto: CreateRoleDto): Promise<Role> {
     return this.roleService.create(createRoleDto);
+  }
+
+  @Post(':id/editRoutes')
+  editRoutes(
+    @Param('id') id: string,
+    @Body() editRoleRoutesDto: EditRoleRoutesDto,
+  ): Promise<Role> {
+    return this.roleService.editRoutes(id, editRoleRoutesDto.routeIds);
   }
 
   @Get()

@@ -1,8 +1,11 @@
 import { Exclude } from 'class-transformer';
+import { Role } from 'src/role/role.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -54,6 +57,10 @@ export class Route {
 
   @Column({ type: 'enum', enum: RouteType })
   type: RouteType;
+
+  @ManyToMany(() => Role, (role) => role.routes)
+  @JoinTable({ name: 'role_menu' })
+  roles: Role[];
 
   @CreateDateColumn({
     type: 'timestamp',

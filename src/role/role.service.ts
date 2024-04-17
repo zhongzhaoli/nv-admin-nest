@@ -1,21 +1,41 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
+import { EditRoleRoutesDto, UpdateRoleDto } from './dto/update-role.dto';
 import { Role } from './role.entity';
 import { GetRoleDto } from './dto/get-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, In, Repository } from 'typeorm';
+import { Route } from '../route/route.entity';
 
 @Injectable()
 export class RoleService {
   constructor(
     @InjectRepository(Role) private roleRepository: Repository<Role>,
+    @InjectRepository(Route) private routeRepository: Repository<Route>,
   ) {}
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
     const role = await this.findOneByName(createRoleDto.name);
     if (role) throw new BadRequestException('角色名已存在');
     const newRole = this.roleRepository.create(createRoleDto);
     return this.roleRepository.save(newRole);
+  }
+
+  async editRoutes(id: string, routeIds: string[]): Promise<Role> {
+    const role = await this.roleRepository.findOne({
+      where: { id },
+      relations: ['routes'],
+    });
+    if (!role) throw new BadRequestException('找不到此角色');
+    // 删除多余的路由
+    role.routes = role.routes.filter((routeItem: Route) => {
+      routeIds.includes(routeItem.id);
+    });
+    // 添加新的路由
+    const newRoutes = await this.routeRepository.find({
+      where: { id: In(routeIds) },
+    });
+    role.routes = role.routes.concat(newRoutes);
+    return this.roleRepository.save(role);
   }
 
   async findAll(query: GetRoleDto): Promise<{ list: Role[]; total: number }> {

@@ -4,10 +4,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Route } from 'src/route/route.entity';
 
 @Entity()
 export class Role {
@@ -22,6 +24,9 @@ export class Role {
 
   @OneToMany(() => User, (user) => user.role)
   users: User[];
+
+  @ManyToMany(() => Route, (route) => route.roles)
+  routes: Route[];
 
   @CreateDateColumn({
     type: 'timestamp',
