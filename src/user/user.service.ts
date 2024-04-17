@@ -26,8 +26,17 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = await this.findOneByUsername(createUserDto.username);
     if (user) throw new BadRequestException('用户名已存在');
+
+    const department =
+      (createUserDto.deptId &&
+        createUserDto.deptId !== '0' &&
+        (await this.deptRepository.findOne({
+          where: { id: createUserDto.deptId },
+        }))) ||
+      null;
     const newCreateUserDto = {
       ...createUserDto,
+      department,
       password: md5(createUserDto.password),
     };
     const newUser = this.userRepository.create(newCreateUserDto);
@@ -64,8 +73,8 @@ export class UserService {
     });
   }
 
-  async setRole(userSetRoleDto: UserSetRoleDto): Promise<User> {
-    const { userId, roleId } = userSetRoleDto;
+  async setRole(userId: string, userSetRoleDto: UserSetRoleDto): Promise<User> {
+    const { roleId } = userSetRoleDto;
     const role = await this.roleRepository.findOne({ where: { id: roleId } });
     if (!role) throw new BadRequestException('找不到此角色');
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -98,7 +107,7 @@ export class UserService {
     const skip = ((pageData.page || 1) - 1) * take;
     const list = await this.userRepository.find({
       where: screenData,
-      relations: ['department'],
+      relations: ['department', 'role'],
       skip,
       take,
     });
@@ -122,7 +131,15 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
     if (!user) throw new BadRequestException('用户不存在');
-    const newUser = this.userRepository.merge(user, updateUserDto);
+    const department =
+      (updateUserDto.deptId &&
+        updateUserDto.deptId !== '0' &&
+        (await this.deptRepository.findOne({
+          where: { id: updateUserDto.deptId },
+        }))) ||
+      null;
+    const updateUser = { ...user, department };
+    const newUser = this.userRepository.merge(user, updateUser);
     return this.userRepository.save(newUser);
   }
 

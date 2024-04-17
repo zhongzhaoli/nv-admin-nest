@@ -12,12 +12,12 @@ import {
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { EditRoleRoutesDto, UpdateRoleDto } from './dto/update-role.dto';
-import { GetRoleDto } from './dto/get-role.dto';
 import { Role } from './role.entity';
 import { TimestampInterceptor } from '../interceptor/timestamp.interceptor';
 import { GetRolePipe } from './pipes/get-role.pipe';
+import { pageListDataProps } from 'src/types/pageListBody.type';
 
-@Controller('role')
+@Controller('system/role')
 @UseInterceptors(TimestampInterceptor)
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
@@ -37,7 +37,7 @@ export class RoleController {
 
   @Get()
   findAll(
-    @Query(GetRolePipe) query: GetRoleDto,
+    @Query(GetRolePipe) query: pageListDataProps,
   ): Promise<{ list: Role[]; total: number }> {
     return this.roleService.findAll(query);
   }

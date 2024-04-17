@@ -5,6 +5,10 @@ import { excludeNullValue } from '../../utils/query.helper';
 @Injectable()
 export class GetRolePipe implements PipeTransform {
   transform(value: GetRoleDto, metadata: ArgumentMetadata) {
-    return excludeNullValue<GetRoleDto>(value);
+    const screenData = excludeNullValue<GetRoleDto>(value);
+    delete screenData.page;
+    delete screenData.pageSize;
+    const pageData = { page: value.page, limit: value.pageSize };
+    return { pageData, screenData };
   }
 }

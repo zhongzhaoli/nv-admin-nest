@@ -1,5 +1,5 @@
 export interface GetRoleDto {
   page?: number;
-  limit?: number;
+  pageSize?: number;
   name?: string;
 }

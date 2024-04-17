@@ -24,7 +24,7 @@ export class User {
   @Exclude()
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   avatar: string;
 
   @Column({ length: 20, nullable: true })
@@ -53,7 +53,6 @@ export class User {
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
-  @Exclude()
   createTime: Date;
 
   @UpdateDateColumn({
@@ -61,6 +60,5 @@ export class User {
     default: () => 'CURRENT_TIMESTAMP(6)',
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
-  @Exclude()
   updateTime: Date;
 }

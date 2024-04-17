@@ -12,4 +12,7 @@ export class UpdateUserDto extends PartialType(
 
   @IsOptional()
   email: string;
+
+  @IsOptional()
+  deptId: string;
 }

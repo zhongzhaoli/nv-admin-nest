@@ -57,9 +57,12 @@ export class UserController {
     return this.userService.remove(id);
   }
 
-  @Post('setRole')
-  setRole(@Body() userSetRoleDto: UserSetRoleDto): Promise<User> {
-    return this.userService.setRole(userSetRoleDto);
+  @Post(':id/setRole')
+  setRole(
+    @Param('id') id: string,
+    @Body() userSetRoleDto: UserSetRoleDto,
+  ): Promise<User> {
+    return this.userService.setRole(id, userSetRoleDto);
   }
 
   @Post('setDepartment')

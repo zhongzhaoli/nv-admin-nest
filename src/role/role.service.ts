@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { EditRoleRoutesDto, UpdateRoleDto } from './dto/update-role.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
 import { Role } from './role.entity';
-import { GetRoleDto } from './dto/get-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, In, Repository } from 'typeorm';
 import { Route } from '../route/route.entity';
+import { pageListDataProps } from '../types/pageListBody.type';
 
 @Injectable()
 export class RoleService {
@@ -38,17 +38,19 @@ export class RoleService {
     return this.roleRepository.save(role);
   }
 
-  async findAll(query: GetRoleDto): Promise<{ list: Role[]; total: number }> {
-    const { limit, page } = query;
-    const take = limit || 10;
-    const skip = (page || 1 - 1) * take;
+  async findAll(
+    query: pageListDataProps,
+  ): Promise<{ list: Role[]; total: number }> {
+    const { screenData, pageData } = query;
+    const take = pageData.limit || 10;
+    const skip = ((pageData.page || 1) - 1) * take;
     const list = await this.roleRepository.find({
-      where: query,
+      where: screenData,
       skip,
       take,
     });
     const total = await this.roleRepository.count({
-      where: query,
+      where: screenData,
     });
     return {
       list,
