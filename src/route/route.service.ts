@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Route } from './route.entity';
+import { Route, RouteType } from './route.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { GetRouteDto } from './dto/get-route.dto';
 import { routeTree, routeMap } from '../utils/route.helper';
@@ -24,9 +24,13 @@ export class RouteService {
   async findAll(query: GetRouteDto) {
     const list = await this.routeRepository.find({ where: query });
     const allList = await this.routeRepository.find();
-    return routeMap(list).map((item) => {
-      return routeTree(item, allList);
+    const routes = [];
+    const isChildSet = new Set<string>();
+    list.forEach((item) => {
+      if (isChildSet.has(item.id)) return;
+      routes.push(routeTree(item, allList, isChildSet, false));
     });
+    return routes.filter((item) => !isChildSet.has(item.id));
   }
 
   findOne(id: string) {

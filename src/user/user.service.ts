@@ -69,10 +69,13 @@ export class UserService {
       relations: ['role', 'role.routes'],
     });
     const allRoutes = (user.role && user.role.routes) || [];
-    const rootRoues = allRoutes.filter((v) => v.pid === '0');
-    return routeMap(rootRoues).map((item) => {
-      return routeTree(item, allRoutes);
+    const routes = [];
+    const isChildSet = new Set<string>();
+    allRoutes.forEach((item) => {
+      if (isChildSet.has(item.id)) return;
+      routes.push(routeTree(item, allRoutes, isChildSet, true));
     });
+    return routes.filter((item) => !isChildSet.has(item.id));
   }
 
   async setRole(userId: string, userSetRoleDto: UserSetRoleDto): Promise<User> {

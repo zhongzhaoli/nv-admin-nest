@@ -1,43 +1,55 @@
 import { GetRouteToMetaDto } from '../route/dto/get-route.dto';
 import { Route, RouteType } from '../route/route.entity';
 
-export const routeTree = (item: GetRouteToMetaDto, allList: Route[]) => {
-  const children = routeMap(allList).filter((v) => v.pid === item.id);
+interface HaveChildrenRoute extends Route {
+  children: GetRouteToMetaDto[];
+}
+
+export const routeTree = (
+  item: Route,
+  allList: Route[],
+  isChildSet: Set<string>,
+  needSingleMenu = false,
+) => {
+  const children = allList.filter((v) => v.pid === item.id);
+  children.forEach((v) => isChildSet.add(v.id));
   if (children.length > 0) {
-    item.children = children.map((v) => {
-      return routeTree(v, allList);
+    item['children'] = children.map((v) => {
+      return routeTree(v, allList, isChildSet, needSingleMenu);
     });
   } else {
-    item.children = [];
+    item['children'] = [];
   }
-  return item;
+  return routeMap(item as HaveChildrenRoute);
 };
 
-export const routeMap = (list: Route[]): GetRouteToMetaDto[] => {
-  return list.map((v) => {
-    const { id, pid, component, name, path } = v;
-    const dict: GetRouteToMetaDto = {
-      id,
-      pid,
-      component,
-      name,
-      path,
-      meta: {
-        type: v.type,
-        title: v.title,
-        icon: v.icon,
-        hidden: v.hidden,
-        affix: v.affix,
-        breadcrumbHidden: !v.breadcrumbHidden,
-        keepAlive: v.keepAlive,
-      },
-    };
-    if (v.type === RouteType.SINGLEMENU) {
-      return singleRoute(dict);
-    } else {
-      return dict;
-    }
-  });
+export const routeMap = (
+  obj: HaveChildrenRoute,
+  needSingleMenu = false,
+): GetRouteToMetaDto => {
+  const { id, pid, component, name, path, children } = obj;
+  const dict: GetRouteToMetaDto = {
+    id,
+    pid,
+    component,
+    name,
+    path,
+    children,
+    meta: {
+      type: obj.type,
+      title: obj.title,
+      icon: obj.icon,
+      hidden: obj.hidden,
+      affix: obj.affix,
+      breadcrumbHidden: !obj.breadcrumbHidden,
+      keepAlive: obj.keepAlive,
+    },
+  };
+  if (needSingleMenu && obj.type === RouteType.SINGLEMENU) {
+    return singleRoute(dict);
+  } else {
+    return dict;
+  }
 };
 
 export const singleRoute = (item: GetRouteToMetaDto) => {

@@ -14,7 +14,7 @@ import { UpdateRouteDto } from './dto/update-route.dto';
 import { GetRoutePipe } from './pipes/get-route.pipe';
 import { GetRouteDto } from './dto/get-route.dto';
 
-@Controller('route')
+@Controller('system/routes')
 export class RouteController {
   constructor(private readonly routeService: RouteService) {}
 
