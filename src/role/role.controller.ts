@@ -35,6 +35,11 @@ export class RoleController {
     return this.roleService.editRoutes(id, editRoleRoutesDto.routeIds);
   }
 
+  @Get(':id/routes')
+  getRoutes(@Param('id') id: string) {
+    return this.roleService.getRoutes(id);
+  }
+
   @Get()
   findAll(
     @Query(GetRolePipe) query: pageListDataProps,

@@ -11,16 +11,18 @@ import { UserLoginDto } from './dto/user-login.dto';
 import { UserSetDeptDto, UserSetRoleDto } from './dto/user-extra.dto';
 import { Role } from '../role/role.entity';
 import { Department } from '../department/department.entity';
-import { routeTree, routeMap } from '../utils/route.helper';
 import { pageListDataProps } from '../types/pageListBody.type';
 import { formatDate } from '../utils/dateTime.helper';
 import { ResponsePageProps } from '../types/responsePage.type';
+import { Route } from '../route/route.entity';
+import { routeTree } from 'src/utils/route.helper';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Role) private roleRepository: Repository<Role>,
+    @InjectRepository(Route) private routeRepository: Repository<Route>,
     @InjectRepository(Department)
     private deptRepository: Repository<Department>,
     private jwtService: JwtService,
@@ -69,11 +71,32 @@ export class UserService {
       relations: ['role', 'role.routes'],
     });
     const allRoutes = (user.role && user.role.routes) || [];
+    const pidSet = new Set<string>();
+    const promiseList = [];
+    async function findPidAndId(
+      pid: string,
+      routeRepository: Repository<Route>,
+    ) {
+      const route = await routeRepository.findOne({ where: { id: pid } });
+      if (!route) return;
+      if (!pidSet.has(pid)) {
+        pidSet.add(pid);
+        allRoutes.push(route);
+        if (route.pid !== '0') findPidAndId(route.pid, routeRepository);
+      }
+    }
+    allRoutes.forEach((item) => {
+      pidSet.add(item.id);
+      if (item.pid !== '0') {
+        promiseList.push(findPidAndId(item.pid, this.routeRepository));
+      }
+    });
+    await Promise.all(promiseList);
     const routes = [];
     const isChildSet = new Set<string>();
     allRoutes.forEach((item) => {
       if (isChildSet.has(item.id)) return;
-      routes.push(routeTree(item, allRoutes, isChildSet, true));
+      routes.push(routeTree(item, allRoutes, isChildSet, false));
     });
     return routes.filter((item) => !isChildSet.has(item.id));
   }

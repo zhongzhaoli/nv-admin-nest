@@ -1,5 +1,8 @@
+import { Injectable } from '@nestjs/common';
 import { GetRouteToMetaDto } from '../route/dto/get-route.dto';
 import { Route, RouteType } from '../route/route.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 interface HaveChildrenRoute extends Route {
   children: GetRouteToMetaDto[];

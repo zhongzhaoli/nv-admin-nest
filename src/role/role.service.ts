@@ -63,6 +63,15 @@ export class RoleService {
     };
   }
 
+  async getRoutes(id: string) {
+    const role = await this.roleRepository.findOne({
+      where: { id },
+      relations: ['routes'],
+    });
+    if (!role) throw new BadRequestException('找不到此角色');
+    return role.routes;
+  }
+
   findOneByName(name: string): Promise<Role> {
     return this.roleRepository.findOne({ where: { name } });
   }

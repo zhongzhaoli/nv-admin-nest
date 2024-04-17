@@ -10,11 +10,12 @@ import { getEnvConfig } from '../utils/dotenv.helper';
 import { ConfigEnum } from '../enum/config.enum';
 import { JwtStrategy } from './jwt.strategy';
 import { UserExtraController } from './userExtra.controller';
-import { Department } from 'src/department/department.entity';
+import { Department } from '../department/department.entity';
+import { Route } from '../route/route.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Role, Department]),
+    TypeOrmModule.forFeature([User, Role, Department, Route]),
     PassportModule,
     JwtModule.registerAsync({
       useFactory: () => {
