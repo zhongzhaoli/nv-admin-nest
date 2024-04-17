@@ -4,8 +4,11 @@ import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Department } from './department.entity';
 import { DeleteResult, Repository } from 'typeorm';
-import { GetDepartmentDto } from './dto/get-department.dto';
 import { User } from '../user/user.entity';
+import { pageListDataProps } from '../types/pageListBody.type';
+import { ResponsePageProps } from '../types/responsePage.type';
+import { ScreenDepartmentDto } from './dto/get-department.dto';
+import { formatDate } from '../utils/dateTime.helper';
 
 @Injectable()
 export class DepartmentService {
@@ -42,21 +45,27 @@ export class DepartmentService {
   }
 
   async findAll(
-    query: GetDepartmentDto,
-  ): Promise<{ list: Department[]; total: number }> {
-    const { limit, page } = query;
-    const take = limit || 10;
-    const skip = (page || 1 - 1) * take;
+    query: pageListDataProps<ScreenDepartmentDto>,
+  ): Promise<ResponsePageProps<Department>> {
+    const { pageData, screenData } = query;
+    const take = pageData.limit || 10;
+    const skip = ((pageData.page || 1) - 1) * take;
     const list = await this.deptRepository.find({
-      where: query,
+      where: screenData,
+      relations: ['createUser'],
       skip,
       take,
     });
+    list.forEach((dept) => {
+      dept.createTime = formatDate(dept.createTime) as unknown as Date;
+      dept.updateTime = formatDate(dept.updateTime) as unknown as Date;
+    });
     const total = await this.deptRepository.count({
-      where: query,
+      where: screenData,
     });
     return {
       list,
+      page: pageData.page || 1,
       total,
     };
   }

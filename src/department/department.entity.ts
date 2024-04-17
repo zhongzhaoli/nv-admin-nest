@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -25,6 +27,10 @@ export class Department {
 
   @OneToMany(() => User, (user) => user.department)
   users: User[];
+
+  @OneToOne(() => User, (user) => user.createDept, { cascade: true })
+  @JoinColumn()
+  createUser: User;
 
   @CreateDateColumn({
     type: 'timestamp',

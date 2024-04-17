@@ -16,6 +16,8 @@ import { Role } from './role.entity';
 import { TimestampInterceptor } from '../interceptor/timestamp.interceptor';
 import { GetRolePipe } from './pipes/get-role.pipe';
 import { pageListDataProps } from 'src/types/pageListBody.type';
+import { ScreenRoleDto } from './dto/get-role.dto';
+import { ResponsePageProps } from 'src/types/responsePage.type';
 
 @Controller('system/role')
 @UseInterceptors(TimestampInterceptor)
@@ -42,8 +44,8 @@ export class RoleController {
 
   @Get()
   findAll(
-    @Query(GetRolePipe) query: pageListDataProps,
-  ): Promise<{ list: Role[]; total: number }> {
+    @Query(GetRolePipe) query: pageListDataProps<ScreenRoleDto>,
+  ): Promise<ResponsePageProps<Role>> {
     return this.roleService.findAll(query);
   }
 

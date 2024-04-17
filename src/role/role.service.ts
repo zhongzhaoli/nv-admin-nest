@@ -8,6 +8,7 @@ import { Route } from '../route/route.entity';
 import { pageListDataProps } from '../types/pageListBody.type';
 import { formatDate } from '../utils/dateTime.helper';
 import { ResponsePageProps } from '../types/responsePage.type';
+import { ScreenRoleDto } from './dto/get-role.dto';
 
 @Injectable()
 export class RoleService {
@@ -40,7 +41,9 @@ export class RoleService {
     return this.roleRepository.save(role);
   }
 
-  async findAll(query: pageListDataProps): Promise<ResponsePageProps<Role>> {
+  async findAll(
+    query: pageListDataProps<ScreenRoleDto>,
+  ): Promise<ResponsePageProps<Role>> {
     const { screenData, pageData } = query;
     const take = pageData.limit || 10;
     const skip = ((pageData.page || 1) - 1) * take;

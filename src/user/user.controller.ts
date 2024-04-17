@@ -19,6 +19,7 @@ import { GetUserPipe } from './pipes/get-user.pipe';
 import { UserSetDeptDto, UserSetRoleDto } from './dto/user-extra.dto';
 import { pageListDataProps } from 'src/types/pageListBody.type';
 import { ScreenUserDto } from './dto/get-user.dto';
+import { ResponsePageProps } from 'src/types/responsePage.type';
 
 @Controller('system/users')
 @UseInterceptors(TimestampInterceptor)
@@ -35,7 +36,7 @@ export class UserController {
   findAll(
     @Query(GetUserPipe)
     query: pageListDataProps<ScreenUserDto>,
-  ): Promise<{ list: User[]; total: number }> {
+  ): Promise<ResponsePageProps<User>> {
     return this.userService.findAll(query);
   }
 

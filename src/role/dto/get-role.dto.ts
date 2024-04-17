@@ -3,3 +3,7 @@ export interface GetRoleDto {
   pageSize?: number;
   name?: string;
 }
+
+export interface ScreenRoleDto {
+  name?: string;
+}

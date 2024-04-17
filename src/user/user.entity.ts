@@ -6,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -48,6 +49,9 @@ export class User {
   @ManyToOne(() => Department, (dept) => dept.users)
   @JoinColumn({ name: 'deptId' })
   department: Department;
+
+  @OneToOne(() => Department, { onDelete: 'CASCADE' })
+  createDept: Department;
 
   @CreateDateColumn({
     type: 'timestamp',

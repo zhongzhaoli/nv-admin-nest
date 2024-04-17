@@ -1,5 +1,9 @@
 export interface GetDepartmentDto {
   page?: number;
-  limit?: number;
+  pageSize?: number;
+  name?: string;
+}
+
+export interface ScreenDepartmentDto {
   name?: string;
 }

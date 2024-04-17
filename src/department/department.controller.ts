@@ -7,15 +7,20 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { Department } from './department.entity';
-import { GetDepartmentDto } from './dto/get-department.dto';
 import { User } from '../user/user.entity';
 import { Serialize } from '../decorators/serialize.decorators';
 import { GetDepartmentPipe } from './pipes/get-department.pipe';
+import { pageListDataProps } from '../types/pageListBody.type';
+import { ScreenDepartmentDto } from './dto/get-department.dto';
+import { ResponsePageProps } from 'src/types/responsePage.type';
+import { AuthGuard } from '@nestjs/passport';
+import { UserReq } from '../types/userReq.type';
 
 @Controller('system/department')
 export class DepartmentController {
@@ -44,8 +49,8 @@ export class DepartmentController {
 
   @Get()
   findAll(
-    @Query(GetDepartmentPipe) query: GetDepartmentDto,
-  ): Promise<{ list: Department[]; total: number }> {
+    @Query(GetDepartmentPipe) query: pageListDataProps<ScreenDepartmentDto>,
+  ): Promise<ResponsePageProps<Department>> {
     return this.departmentService.findAll(query);
   }
 
