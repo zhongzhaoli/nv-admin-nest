@@ -1,5 +1,4 @@
 import { Exclude } from 'class-transformer';
-import { IsOptional } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -54,7 +53,7 @@ export class Route {
   sort: number;
 
   @Column({ type: 'enum', enum: RouteType })
-  type: string;
+  type: RouteType;
 
   @CreateDateColumn({
     type: 'timestamp',

@@ -4,7 +4,7 @@ import { UpdateRouteDto } from './dto/update-route.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Route } from './route.entity';
 import { DeleteResult, Repository } from 'typeorm';
-import { GetRouteDto } from './dto/get-route.dto';
+import { GetRouteDto, GetRouteToMetaDto } from './dto/get-route.dto';
 
 @Injectable()
 export class RouteService {
@@ -21,44 +21,44 @@ export class RouteService {
   }
 
   async findAll(query: GetRouteDto) {
-    const routes = await this.routeRepository.find();
-    const rootRoute = this.routeFilterMap(routes, (v) => v.pid === '0');
-    const noRootRoute = this.routeFilterMap(routes, (v) => v.pid !== '0');
-    return this.routeTree(
-      rootRoute as unknown as Route[],
-      noRootRoute as unknown as Route[],
-    );
-  }
-
-  routeTree(rootRoute: Route[], noRootRoute: Route[]) {
-    rootRoute.forEach((item) => {
-      item['children'] = noRootRoute.filter((v) => v.pid === item.id);
-      this.routeTree(item['children'], noRootRoute);
+    const list = await this.routeRepository.find({ where: query });
+    const allList = await this.routeRepository.find();
+    return this.routeMap(list).map((item) => {
+      return this.routeTree(item, allList);
     });
-    return rootRoute;
   }
 
-  routeFilterMap(list: Route[], fun: (item: Route) => boolean) {
-    return list
-      .filter((item) => fun(item))
-      .map((v) => {
-        const { id, pid, component, name, path } = v;
-        return {
-          id,
-          pid,
-          component,
-          name,
-          path,
-          meta: {
-            title: v.title,
-            icon: v.icon,
-            hidden: v.hidden,
-            affix: v.affix,
-            breadcrumb: !v.breadcrumbHidden,
-            keepAlive: v.keepAlive,
-          },
-        };
+  routeTree(item: GetRouteToMetaDto, allList: Route[]) {
+    const children = this.routeMap(allList).filter((v) => v.pid === item.id);
+    if (children.length > 0) {
+      item['children'] = children.map((v) => {
+        return this.routeTree(v, allList);
       });
+    }
+    return item;
+  }
+
+  routeMap(list: Route[]): GetRouteToMetaDto[] {
+    return list.map((v) => {
+      const { id, pid, component, name, path } = v;
+      const dict: GetRouteToMetaDto = {
+        id,
+        pid,
+        component,
+        name,
+        path,
+        meta: {
+          type: v.type,
+          title: v.title,
+          icon: v.icon,
+          hidden: v.hidden,
+          affix: v.affix,
+          breadcrumbHidden: !v.breadcrumbHidden,
+          keepAlive: v.keepAlive,
+        },
+      };
+      return dict;
+    });
   }
 
   findOne(id: string) {
