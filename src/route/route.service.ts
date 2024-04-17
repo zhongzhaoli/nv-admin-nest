@@ -4,7 +4,8 @@ import { UpdateRouteDto } from './dto/update-route.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Route } from './route.entity';
 import { DeleteResult, Repository } from 'typeorm';
-import { GetRouteDto, GetRouteToMetaDto } from './dto/get-route.dto';
+import { GetRouteDto } from './dto/get-route.dto';
+import { routeTree, routeMap } from '../utils/route.helper';
 
 @Injectable()
 export class RouteService {
@@ -23,41 +24,8 @@ export class RouteService {
   async findAll(query: GetRouteDto) {
     const list = await this.routeRepository.find({ where: query });
     const allList = await this.routeRepository.find();
-    return this.routeMap(list).map((item) => {
-      return this.routeTree(item, allList);
-    });
-  }
-
-  routeTree(item: GetRouteToMetaDto, allList: Route[]) {
-    const children = this.routeMap(allList).filter((v) => v.pid === item.id);
-    if (children.length > 0) {
-      item['children'] = children.map((v) => {
-        return this.routeTree(v, allList);
-      });
-    }
-    return item;
-  }
-
-  routeMap(list: Route[]): GetRouteToMetaDto[] {
-    return list.map((v) => {
-      const { id, pid, component, name, path } = v;
-      const dict: GetRouteToMetaDto = {
-        id,
-        pid,
-        component,
-        name,
-        path,
-        meta: {
-          type: v.type,
-          title: v.title,
-          icon: v.icon,
-          hidden: v.hidden,
-          affix: v.affix,
-          breadcrumbHidden: !v.breadcrumbHidden,
-          keepAlive: v.keepAlive,
-        },
-      };
-      return dict;
+    return routeMap(list).map((item) => {
+      return routeTree(item, allList);
     });
   }
 

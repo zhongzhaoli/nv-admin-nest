@@ -24,16 +24,6 @@ export class DepartmentService {
   }
 
   async addUser(deptId: string, userIds: string[]) {
-    // const dept = await this.findOne(deptId);
-    // if (!dept) throw new BadRequestException('找不到此部门');
-    // console.log(userIds);
-    // userIds.forEach(async (userId) => {
-    //   const user = await this.userRepository.findOne({ where: { id: userId } });
-    //   if (!user) return;
-    //   user.department = dept;
-    //   await this.userRepository.save(user);
-    // });
-    // return {};
     const dept = await this.findOne(deptId);
     if (!dept) throw new BadRequestException('找不到此部门');
 
@@ -69,6 +59,10 @@ export class DepartmentService {
       list,
       total,
     };
+  }
+
+  findAllList(): Promise<Department[]> {
+    return this.deptRepository.find();
   }
 
   findOne(id: string): Promise<Department> {

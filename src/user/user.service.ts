@@ -5,12 +5,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as md5 from 'md5';
-import { GetUserDto } from './dto/get-user.dto';
+import { GetUserDto, ScreenUserDto } from './dto/get-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserSetDeptDto, UserSetRoleDto } from './dto/user-extra.dto';
-import { Role } from 'src/role/role.entity';
-import { Department } from 'src/department/department.entity';
+import { Role } from '../role/role.entity';
+import { Department } from '../department/department.entity';
+import { routeTree, routeMap } from '../utils/route.helper';
+import { pageListDataProps } from '../types/pageListBody.type';
 
 @Injectable()
 export class UserService {
@@ -50,6 +52,18 @@ export class UserService {
     return this.userRepository.findOne({ where: { id } });
   }
 
+  async getUserRoutes(userReq: User) {
+    const user = await this.userRepository.findOne({
+      where: { id: userReq.id },
+      relations: ['role', 'role.routes'],
+    });
+    const allRoutes = (user.role && user.role.routes) || [];
+    const rootRoues = allRoutes.filter((v) => v.pid === '0');
+    return routeMap(rootRoues).map((item) => {
+      return routeTree(item, allRoutes);
+    });
+  }
+
   async setRole(userSetRoleDto: UserSetRoleDto): Promise<User> {
     const { userId, roleId } = userSetRoleDto;
     const role = await this.roleRepository.findOne({ where: { id: roleId } });
@@ -76,18 +90,20 @@ export class UserService {
     });
   }
 
-  async findAll(query: GetUserDto): Promise<{ list: User[]; total: number }> {
-    const { limit, page } = query;
-    const take = limit || 10;
-    const skip = (page || 1 - 1) * take;
+  async findAll(
+    query: pageListDataProps<ScreenUserDto>,
+  ): Promise<{ list: User[]; total: number }> {
+    const { pageData, screenData } = query;
+    const take = pageData.limit || 10;
+    const skip = ((pageData.page || 1) - 1) * take;
     const list = await this.userRepository.find({
-      where: query,
+      where: screenData,
       relations: ['department'],
       skip,
       take,
     });
     const total = await this.userRepository.count({
-      where: query,
+      where: screenData,
     });
     return {
       list,

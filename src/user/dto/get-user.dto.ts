@@ -5,11 +5,17 @@ export class GetUserDto {
   page: number;
 
   @IsOptional()
-  limit: number;
+  pageSize: number;
 
   @IsOptional()
   username: string;
 
   @IsOptional()
+  deptId: string;
+}
+
+export interface ScreenUserDto {
+  username?: string;
+  status?: boolean;
   deptId: string;
 }

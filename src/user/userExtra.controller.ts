@@ -1,21 +1,38 @@
-import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { TimestampInterceptor } from '../interceptor/timestamp.interceptor';
 import { UserService } from './user.service';
-import { UserSetDeptDto, UserSetRoleDto } from './dto/user-extra.dto';
 import { User } from './user.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { UserReq } from '../types/userReq.type';
+import { UserLoginDto } from './dto/user-login.dto';
 
 @Controller('user')
 @UseInterceptors(TimestampInterceptor)
 export class UserExtraController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('setRole')
-  setRole(@Body() userSetRoleDto: UserSetRoleDto): Promise<User> {
-    return this.userService.setRole(userSetRoleDto);
+  @Post('login')
+  login(@Body() userLoginDto: UserLoginDto): Promise<{ token: string }> {
+    return this.userService.login(userLoginDto);
   }
 
-  @Post('setDepartment')
-  setDepartment(@Body() userSetRoleDto: UserSetDeptDto): Promise<User> {
-    return this.userService.setDepartment(userSetRoleDto);
+  @Get('userInfo')
+  @UseGuards(AuthGuard('jwt'))
+  getUserInfo(@Req() req: UserReq): Promise<User> {
+    return this.userService.getUserInfo(req.user.id);
+  }
+
+  @Get('routes')
+  @UseGuards(AuthGuard('jwt'))
+  getUserRoutes(@Req() req: UserReq) {
+    return this.userService.getUserRoutes(req.user);
   }
 }

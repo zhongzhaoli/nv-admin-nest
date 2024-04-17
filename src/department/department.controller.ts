@@ -17,7 +17,7 @@ import { User } from '../user/user.entity';
 import { Serialize } from '../decorators/serialize.decorators';
 import { GetDepartmentPipe } from './pipes/get-department.pipe';
 
-@Controller('department')
+@Controller('system/department')
 export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}
 
@@ -35,6 +35,11 @@ export class DepartmentController {
   ): Promise<any> {
     const { userIds } = addUser;
     return this.departmentService.addUser(id, userIds);
+  }
+
+  @Get('/list')
+  findAllList(): Promise<Department[]> {
+    return this.departmentService.findAllList();
   }
 
   @Get()

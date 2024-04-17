@@ -8,22 +8,19 @@ import {
   Delete,
   UseInterceptors,
   Query,
-  UseGuards,
-  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserLoginDto } from './dto/user-login.dto';
 import { User } from './user.entity';
 import { TimestampInterceptor } from '../interceptor/timestamp.interceptor';
-import { GetUserDto } from './dto/get-user.dto';
 import { Serialize } from '../decorators/serialize.decorators';
-import { AuthGuard } from '@nestjs/passport';
-import { UserReq } from '../types/userReq.type';
 import { GetUserPipe } from './pipes/get-user.pipe';
+import { UserSetDeptDto, UserSetRoleDto } from './dto/user-extra.dto';
+import { pageListDataProps } from 'src/types/pageListBody.type';
+import { ScreenUserDto } from './dto/get-user.dto';
 
-@Controller('user')
+@Controller('system/users')
 @UseInterceptors(TimestampInterceptor)
 @Serialize(User)
 export class UserController {
@@ -34,20 +31,10 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Post('login')
-  login(@Body() userLoginDto: UserLoginDto): Promise<{ token: string }> {
-    return this.userService.login(userLoginDto);
-  }
-
-  @Get('userInfo')
-  @UseGuards(AuthGuard('jwt'))
-  getUserInfo(@Req() req: UserReq): Promise<User> {
-    return this.userService.getUserInfo(req.user.id);
-  }
-
   @Get()
   findAll(
-    @Query(GetUserPipe) query: GetUserDto,
+    @Query(GetUserPipe)
+    query: pageListDataProps<ScreenUserDto>,
   ): Promise<{ list: User[]; total: number }> {
     return this.userService.findAll(query);
   }
@@ -68,5 +55,15 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string): Promise<any> {
     return this.userService.remove(id);
+  }
+
+  @Post('setRole')
+  setRole(@Body() userSetRoleDto: UserSetRoleDto): Promise<User> {
+    return this.userService.setRole(userSetRoleDto);
+  }
+
+  @Post('setDepartment')
+  setDepartment(@Body() userSetRoleDto: UserSetDeptDto): Promise<User> {
+    return this.userService.setDepartment(userSetRoleDto);
   }
 }

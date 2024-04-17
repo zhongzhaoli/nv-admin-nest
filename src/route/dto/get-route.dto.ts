@@ -7,12 +7,13 @@ export interface GetRouteDto {
 
 export interface GetRouteToMetaDto extends Partial<Route> {
   meta: {
-    title: string;
-    icon: string;
-    hidden: boolean;
-    affix: boolean;
-    breadcrumbHidden: boolean;
-    keepAlive: boolean;
-    type: RouteType;
+    title?: string;
+    icon?: string;
+    hidden?: boolean;
+    affix?: boolean;
+    breadcrumbHidden?: boolean;
+    keepAlive?: boolean;
+    type?: RouteType;
   };
+  children?: GetRouteToMetaDto[];
 }
