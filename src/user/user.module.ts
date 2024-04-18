@@ -12,10 +12,11 @@ import { JwtStrategy } from './jwt.strategy';
 import { UserExtraController } from './userExtra.controller';
 import { Department } from '../department/department.entity';
 import { Route } from '../route/route.entity';
+import { TodoList } from '../todo-list/todo-list.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Role, Department, Route]),
+    TypeOrmModule.forFeature([User, Role, Department, Route, TodoList]),
     PassportModule,
     JwtModule.registerAsync({
       useFactory: () => {

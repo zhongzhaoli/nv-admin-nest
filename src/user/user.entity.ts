@@ -6,12 +6,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { IsEmail, IsPhoneNumber, Length } from 'class-validator';
-import { Department } from 'src/department/department.entity';
+import { IsEmail, IsPhoneNumber } from 'class-validator';
+import { Department } from '../department/department.entity';
+import { TodoList } from '../todo-list/todo-list.entity';
 
 @Entity()
 export class User {
@@ -46,12 +48,15 @@ export class User {
   @JoinColumn({ name: 'roleId' })
   role: Role;
 
-  @ManyToOne(() => Department, (dept) => dept.users)
+  @ManyToOne(() => Department, (dept) => dept.users, { nullable: true })
   @JoinColumn({ name: 'deptId' })
   department: Department;
 
-  @OneToOne(() => Department, { onDelete: 'CASCADE' })
-  createDept: Department;
+  @OneToMany(() => Department, (dept) => dept.createUser)
+  createDept: Department[];
+
+  @OneToMany(() => TodoList, (todo) => todo.createUser)
+  todoList: TodoList[];
 
   @CreateDateColumn({
     type: 'timestamp',

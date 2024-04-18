@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
@@ -22,16 +23,20 @@ import { GetDepartmentPipe } from './pipes/get-department.pipe';
 import { pageListDataProps } from '../types/pageListBody.type';
 import { ScreenDepartmentDto } from './dto/get-department.dto';
 import { ResponsePageProps } from 'src/types/responsePage.type';
+import { AuthGuard } from '@nestjs/passport';
+import { UserReq } from 'src/types/userReq.type';
 
 @Controller('system/department')
 export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   create(
     @Body() createDepartmentDto: CreateDepartmentDto,
+    @Req() req: UserReq,
   ): Promise<Department> {
-    return this.departmentService.create(createDepartmentDto);
+    return this.departmentService.create(createDepartmentDto, req.user);
   }
 
   @Post(':id/addUser')

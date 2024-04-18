@@ -6,6 +6,7 @@ import { RoleModule } from './role/role.module';
 import { DepartmentModule } from './department/department.module';
 import { RouteModule } from './route/route.module';
 import { CommonModule } from './common/common.module';
+import { TodoListModule } from './todo-list/todo-list.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { CommonModule } from './common/common.module';
     DepartmentModule,
     RouteModule,
     CommonModule,
+    TodoListModule,
   ],
   controllers: [],
   providers: [Logger],

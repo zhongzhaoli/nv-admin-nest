@@ -6,30 +6,24 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export class Department {
+export class TodoList {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 15 })
-  name: string;
+  @Column({ length: 100 })
+  title: string;
 
-  @Column()
-  avatar: string;
+  @Column({ default: false })
+  active: boolean;
 
-  @Column({ nullable: true })
-  description: string;
-
-  @OneToMany(() => User, (user) => user.department)
-  users: User[];
-
-  @ManyToOne(() => User, (user) => user.createDept)
-  @JoinColumn()
+  @ManyToOne(() => User, (user) => user.todoList)
+  @JoinColumn({ name: 'userId' })
   createUser: User;
 
   @CreateDateColumn({

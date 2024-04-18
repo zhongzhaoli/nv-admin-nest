@@ -21,11 +21,17 @@ export class DepartmentService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-  async create(createDepartmentDto: CreateDepartmentDto): Promise<Department> {
+  async create(
+    createDepartmentDto: CreateDepartmentDto,
+    user: User,
+  ): Promise<Department> {
     const { name } = createDepartmentDto;
     const dept = await this.findOneByName(name);
     if (dept) throw new BadRequestException('部门已存在');
-    const newDept = this.deptRepository.create(createDepartmentDto);
+    const newDept = this.deptRepository.create({
+      ...createDepartmentDto,
+      createUser: user,
+    });
     return this.deptRepository.save(newDept);
   }
 
