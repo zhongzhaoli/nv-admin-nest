@@ -4,6 +4,7 @@ import {
   UseInterceptors,
   UploadedFile,
   UseGuards,
+  Get,
 } from '@nestjs/common';
 import { CommonService } from './common.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -18,5 +19,10 @@ export class CommonController {
   @UseGuards(AuthGuard('jwt'))
   fileUpload(@UploadedFile() file: any): any {
     return this.commonService.fileUpload(file);
+  }
+
+  @Get('/weatherInfo')
+  weatherInfo(): any {
+    return this.commonService.weatherInfo();
   }
 }

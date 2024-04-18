@@ -5,11 +5,14 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Article } from '../article/article.entity';
 
 @Entity()
 export class Department {
@@ -31,6 +34,9 @@ export class Department {
   @ManyToOne(() => User, (user) => user.createDept)
   @JoinColumn()
   createUser: User;
+
+  @ManyToMany(() => Article, (article) => article.departments)
+  article: Article[];
 
   @CreateDateColumn({
     type: 'timestamp',

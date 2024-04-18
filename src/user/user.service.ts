@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as md5 from 'md5';
-import { ScreenUserDto } from './dto/get-user.dto';
+import { ResponseUserInfoProps, ScreenUserDto } from './dto/get-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserSetDeptDto, UserSetRoleDto } from './dto/user-extra.dto';
@@ -61,8 +61,20 @@ export class UserService {
     };
   }
 
-  async getUserInfo(id: string): Promise<User> {
-    return this.userRepository.findOne({ where: { id } });
+  async getUserInfo(id: string): Promise<ResponseUserInfoProps> {
+    const user = (await this.userRepository.findOne({
+      where: { id },
+      relations: ['department'],
+    })) as ResponseUserInfoProps;
+    if (user.department) {
+      const departmemnt = await this.deptRepository.findOne({
+        where: { id: user.department.id },
+        relations: ['users'],
+      });
+      user.memberCount = departmemnt.users.length;
+      user.memberAvatarList = departmemnt.users.map((item) => item.avatar);
+    }
+    return user;
   }
 
   async getUserRoutes(userReq: User) {

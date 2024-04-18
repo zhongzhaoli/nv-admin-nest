@@ -13,10 +13,18 @@ import { UserExtraController } from './userExtra.controller';
 import { Department } from '../department/department.entity';
 import { Route } from '../route/route.entity';
 import { TodoList } from '../todo-list/todo-list.entity';
+import { Article } from 'src/article/article.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Role, Department, Route, TodoList]),
+    TypeOrmModule.forFeature([
+      User,
+      Role,
+      Department,
+      Route,
+      TodoList,
+      Article,
+    ]),
     PassportModule,
     JwtModule.registerAsync({
       useFactory: () => {

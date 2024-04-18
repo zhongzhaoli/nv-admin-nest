@@ -1,4 +1,5 @@
 import { IsOptional } from 'class-validator';
+import { User } from '../user.entity';
 
 export class GetUserDto {
   @IsOptional()
@@ -18,4 +19,9 @@ export interface ScreenUserDto {
   username?: string;
   status?: boolean;
   deptId: string;
+}
+
+export interface ResponseUserInfoProps extends User {
+  memberCount: number;
+  memberAvatarList: string[];
 }

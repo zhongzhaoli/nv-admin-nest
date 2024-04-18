@@ -7,6 +7,8 @@ import { DepartmentModule } from './department/department.module';
 import { RouteModule } from './route/route.module';
 import { CommonModule } from './common/common.module';
 import { TodoListModule } from './todo-list/todo-list.module';
+import { ArticleModule } from './article/article.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { TodoListModule } from './todo-list/todo-list.module';
     RouteModule,
     CommonModule,
     TodoListModule,
+    ArticleModule,
+    DashboardModule,
   ],
   controllers: [],
   providers: [Logger],

@@ -5,15 +5,17 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { IsEmail, IsPhoneNumber } from 'class-validator';
 import { Department } from '../department/department.entity';
 import { TodoList } from '../todo-list/todo-list.entity';
+import { Article } from 'src/article/article.entity';
 
 @Entity()
 export class User {
@@ -57,6 +59,12 @@ export class User {
 
   @OneToMany(() => TodoList, (todo) => todo.createUser)
   todoList: TodoList[];
+
+  @ManyToMany(() => Article, (article) => article.users)
+  article: Article[];
+
+  @OneToMany(() => Article, (dept) => dept.createUser)
+  createArticle: Article[];
 
   @CreateDateColumn({
     type: 'timestamp',
