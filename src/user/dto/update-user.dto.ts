@@ -1,6 +1,6 @@
 import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
-import { IsOptional } from 'class-validator';
+import { IsBoolean, IsOptional } from 'class-validator';
 export class UpdateUserDto extends PartialType(
   OmitType(CreateUserDto, ['password'] as const),
 ) {
@@ -15,4 +15,9 @@ export class UpdateUserDto extends PartialType(
 
   @IsOptional()
   deptId: string;
+}
+
+export class UpdateUserStatusDto {
+  @IsBoolean()
+  status: boolean;
 }

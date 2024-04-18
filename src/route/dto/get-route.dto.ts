@@ -14,6 +14,7 @@ export interface GetRouteToMetaDto extends Partial<Route> {
     breadcrumbHidden?: boolean;
     keepAlive?: boolean;
     type?: RouteType;
+    sort?: number;
   };
   children?: GetRouteToMetaDto[];
 }

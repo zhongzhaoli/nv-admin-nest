@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateUserStatusDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import { TimestampInterceptor } from '../interceptor/timestamp.interceptor';
 import { Serialize } from '../decorators/serialize.decorators';
@@ -51,6 +51,14 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
     return this.userService.update(id, updateUserDto);
+  }
+
+  @Patch(':id/changeStatus')
+  updateStatus(
+    @Param('id') id: string,
+    @Body() body: UpdateUserStatusDto,
+  ): Promise<User> {
+    return this.userService.updateStatus(id, body.status);
   }
 
   @Delete(':id')

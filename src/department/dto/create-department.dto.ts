@@ -1,4 +1,4 @@
-import { IsString, Length } from 'class-validator';
+import { IsOptional, IsString, Length } from 'class-validator';
 
 export class CreateDepartmentDto {
   @IsString()
@@ -7,4 +7,7 @@ export class CreateDepartmentDto {
 
   @IsString()
   avatar: string;
+
+  @IsOptional()
+  description: string;
 }

@@ -7,7 +7,10 @@ import { DeleteResult, Repository } from 'typeorm';
 import { User } from '../user/user.entity';
 import { pageListDataProps } from '../types/pageListBody.type';
 import { ResponsePageProps } from '../types/responsePage.type';
-import { ScreenDepartmentDto } from './dto/get-department.dto';
+import {
+  ResponseDepartmentProps,
+  ScreenDepartmentDto,
+} from './dto/get-department.dto';
 import { formatDate } from '../utils/dateTime.helper';
 
 @Injectable()
@@ -40,23 +43,23 @@ export class DepartmentService {
 
     // 使用 Promise.all 等待所有异步操作完成
     await Promise.all(updateUserPromises);
-    console.log(2);
     return {};
   }
 
   async findAll(
     query: pageListDataProps<ScreenDepartmentDto>,
-  ): Promise<ResponsePageProps<Department>> {
+  ): Promise<ResponsePageProps<ResponseDepartmentProps>> {
     const { pageData, screenData } = query;
     const take = pageData.limit || 10;
     const skip = ((pageData.page || 1) - 1) * take;
-    const list = await this.deptRepository.find({
+    const list = (await this.deptRepository.find({
       where: screenData,
-      relations: ['createUser'],
+      relations: ['createUser', 'users'],
       skip,
       take,
-    });
+    })) as ResponseDepartmentProps[];
     list.forEach((dept) => {
+      dept.memberCount = dept.users.length;
       dept.createTime = formatDate(dept.createTime) as unknown as Date;
       dept.updateTime = formatDate(dept.updateTime) as unknown as Date;
     });

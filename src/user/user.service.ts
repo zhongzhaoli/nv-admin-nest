@@ -15,7 +15,7 @@ import { pageListDataProps } from '../types/pageListBody.type';
 import { formatDate } from '../utils/dateTime.helper';
 import { ResponsePageProps } from '../types/responsePage.type';
 import { Route } from '../route/route.entity';
-import { routeTree } from 'src/utils/route.helper';
+import { routeTree } from '../utils/route.helper';
 
 @Injectable()
 export class UserService {
@@ -70,7 +70,9 @@ export class UserService {
       where: { id: userReq.id },
       relations: ['role', 'role.routes'],
     });
-    const allRoutes = (user.role && user.role.routes) || [];
+    const allRoutes = ((user.role && user.role.routes) || []).sort(
+      (a, b) => a.sort - b.sort,
+    );
     const pidSet = new Set<string>();
     const promiseList = [];
     async function findPidAndId(
@@ -96,7 +98,7 @@ export class UserService {
     const isChildSet = new Set<string>();
     allRoutes.forEach((item) => {
       if (isChildSet.has(item.id)) return;
-      routes.push(routeTree(item, allRoutes, isChildSet, false));
+      routes.push(routeTree(item, allRoutes, isChildSet, true));
     });
     return routes.filter((item) => !isChildSet.has(item.id));
   }
@@ -174,6 +176,13 @@ export class UserService {
 
     const updateUser = { ...updateUserDto, department };
     const newUser = this.userRepository.merge(user, updateUser);
+    return this.userRepository.save(newUser);
+  }
+
+  async updateStatus(id: string, status: boolean): Promise<User> {
+    const user = await this.findOne(id);
+    if (!user) throw new BadRequestException('用户不存在');
+    const newUser = this.userRepository.merge(user, { status });
     return this.userRepository.save(newUser);
   }
 

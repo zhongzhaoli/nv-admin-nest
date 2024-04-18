@@ -22,8 +22,13 @@ export class RouteService {
   }
 
   async findAll(query: GetRouteDto) {
-    const list = await this.routeRepository.find({ where: query });
-    const allList = await this.routeRepository.find();
+    const list = await this.routeRepository.find({
+      where: query,
+      order: { sort: 'ASC' },
+    });
+    const allList = await this.routeRepository.find({
+      order: { sort: 'ASC' },
+    });
     const routes = [];
     const isChildSet = new Set<string>();
     list.forEach((item) => {

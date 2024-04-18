@@ -1,8 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { GetRouteToMetaDto } from '../route/dto/get-route.dto';
 import { Route, RouteType } from '../route/route.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 interface HaveChildrenRoute extends Route {
   children: GetRouteToMetaDto[];
@@ -23,7 +20,7 @@ export const routeTree = (
   } else {
     item['children'] = [];
   }
-  return routeMap(item as HaveChildrenRoute);
+  return routeMap(item as HaveChildrenRoute, needSingleMenu);
 };
 
 export const routeMap = (
@@ -44,7 +41,8 @@ export const routeMap = (
       icon: obj.icon,
       hidden: obj.hidden,
       affix: obj.affix,
-      breadcrumbHidden: !obj.breadcrumbHidden,
+      sort: obj.sort,
+      breadcrumbHidden: obj.breadcrumbHidden,
       keepAlive: obj.keepAlive,
     },
   };

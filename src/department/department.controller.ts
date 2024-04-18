@@ -11,7 +11,10 @@ import {
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
-import { UpdateDepartmentDto } from './dto/update-department.dto';
+import {
+  EditDepartmentUserDto,
+  UpdateDepartmentDto,
+} from './dto/update-department.dto';
 import { Department } from './department.entity';
 import { User } from '../user/user.entity';
 import { Serialize } from '../decorators/serialize.decorators';
@@ -19,8 +22,6 @@ import { GetDepartmentPipe } from './pipes/get-department.pipe';
 import { pageListDataProps } from '../types/pageListBody.type';
 import { ScreenDepartmentDto } from './dto/get-department.dto';
 import { ResponsePageProps } from 'src/types/responsePage.type';
-import { AuthGuard } from '@nestjs/passport';
-import { UserReq } from '../types/userReq.type';
 
 @Controller('system/department')
 export class DepartmentController {
@@ -36,7 +37,7 @@ export class DepartmentController {
   @Post(':id/addUser')
   addUser(
     @Param('id') id: string,
-    @Body() addUser: { userIds: string[] },
+    @Body() addUser: EditDepartmentUserDto,
   ): Promise<any> {
     const { userIds } = addUser;
     return this.departmentService.addUser(id, userIds);
@@ -59,10 +60,10 @@ export class DepartmentController {
     return this.departmentService.findOne(id);
   }
 
-  @Get(':userId/users')
+  @Get(':id/users')
   @Serialize(User)
-  findUsers(@Param('userId') userId: string): Promise<User[]> {
-    return this.departmentService.findUsers(userId);
+  findUsers(@Param('id') id: string): Promise<User[]> {
+    return this.departmentService.findUsers(id);
   }
 
   @Patch(':id')
@@ -70,7 +71,6 @@ export class DepartmentController {
     @Param('id') id: string,
     @Body() updateDepartmentDto: UpdateDepartmentDto,
   ): Promise<Department> {
-    console.log(updateDepartmentDto);
     return this.departmentService.update(id, updateDepartmentDto);
   }
 
