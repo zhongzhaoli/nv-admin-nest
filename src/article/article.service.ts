@@ -30,28 +30,20 @@ export class ArticleService {
     let deptRealList = [];
     let userRealList = [];
     if (whoType === 'can') {
-      if (userList.length) {
-        userRealList = await this.userRepository.find({
-          where: { id: In(userList) },
-        });
-      }
-      if (deptList.length) {
-        deptRealList = await this.deptRepository.find({
-          where: { id: In(deptList) },
-        });
-      }
+      userRealList = await this.userRepository.find({
+        where: { id: In(userList) },
+      });
+      deptRealList = await this.deptRepository.find({
+        where: { id: In(deptList) },
+      });
     }
     if (whoType === 'cant') {
-      if (userList.length) {
-        userRealList = await this.userRepository.find({
-          where: { id: Not(In(userList)) },
-        });
-      }
-      if (deptList.length) {
-        deptRealList = await this.deptRepository.find({
-          where: { id: Not(In(deptList)) },
-        });
-      }
+      userRealList = await this.userRepository.find({
+        where: { id: Not(In(userList)) },
+      });
+      deptRealList = await this.deptRepository.find({
+        where: { id: Not(In(deptList)) },
+      });
     }
     const newArticle = this.articleRepository.create({
       title,
@@ -87,7 +79,7 @@ export class ArticleService {
         const isMeDept = item.departments.some(
           (dept) => dept.id === departmentId,
         );
-        return isMe || isMeAuthor || isMeDept;
+        return isMeAuthor || (isMe && isMeDept);
       })
       .map((item) => {
         delete item.users;
