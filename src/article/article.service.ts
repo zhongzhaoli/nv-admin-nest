@@ -30,23 +30,29 @@ export class ArticleService {
     let deptRealList = [];
     let userRealList = [];
     if (whoType === 'can') {
-      userRealList = await this.userRepository.find({
-        where: { id: In(userList) },
-      });
-      deptRealList = await this.deptRepository.find({
-        where: { id: In(deptList) },
-      });
+      if (userList.length) {
+        userRealList = await this.userRepository.find({
+          where: { id: In(userList) },
+        });
+      }
+      if (deptList.length) {
+        deptRealList = await this.deptRepository.find({
+          where: { id: In(deptList) },
+        });
+      }
     }
     if (whoType === 'cant') {
-      userRealList = await this.userRepository.find({
-        where: { id: Not(In(userList)) },
-      });
-      deptRealList = await this.deptRepository.find({
-        where: { id: Not(In(deptList)) },
-      });
+      if (userList.length) {
+        userRealList = await this.userRepository.find({
+          where: { id: Not(In(userList)) },
+        });
+      }
+      if (deptList.length) {
+        deptRealList = await this.deptRepository.find({
+          where: { id: Not(In(deptList)) },
+        });
+      }
     }
-    console.log(deptRealList);
-    console.log(userRealList);
     const newArticle = this.articleRepository.create({
       title,
       content,
