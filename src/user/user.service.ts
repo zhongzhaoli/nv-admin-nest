@@ -55,6 +55,7 @@ export class UserService {
       },
     });
     if (!user) throw new BadRequestException('用户名或密码错误');
+    if (!user.status) throw new BadRequestException('用户已被禁用');
     const token = await this.createToken(user.id);
     return {
       token,
