@@ -8,6 +8,8 @@ import {
   Delete,
   UseInterceptors,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -20,6 +22,8 @@ import { UserSetDeptDto, UserSetRoleDto } from './dto/user-extra.dto';
 import { pageListDataProps } from 'src/types/pageListBody.type';
 import { ScreenUserDto } from './dto/get-user.dto';
 import { ResponsePageProps } from 'src/types/responsePage.type';
+import { AuthGuard } from '@nestjs/passport';
+import { UserReq } from 'src/types/userReq.type';
 
 @Controller('system/users')
 @UseInterceptors(TimestampInterceptor)
@@ -38,6 +42,16 @@ export class UserController {
     query: pageListDataProps<ScreenUserDto>,
   ): Promise<ResponsePageProps<User>> {
     return this.userService.findAll(query);
+  }
+
+  @Get('/excludeMine')
+  @UseGuards(AuthGuard('jwt'))
+  findAllExcludeMine(
+    @Query(GetUserPipe)
+    query: pageListDataProps<ScreenUserDto>,
+    @Req() req: UserReq,
+  ): Promise<ResponsePageProps<User>> {
+    return this.userService.findAllExcludeMine(query, req.user.id);
   }
 
   @Get(':id')

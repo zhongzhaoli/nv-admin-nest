@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ChangePasswordDto, UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, Not, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as md5 from 'md5';
 import { ResponseUserInfoProps, ScreenUserDto } from './dto/get-user.dto';
@@ -167,6 +167,33 @@ export class UserService {
     };
   }
 
+  async findAllExcludeMine(
+    query: pageListDataProps<ScreenUserDto>,
+    userId: string,
+  ): Promise<ResponsePageProps<User>> {
+    const { pageData, screenData } = query;
+    const take = pageData.limit || 10;
+    const skip = ((pageData.page || 1) - 1) * take;
+    const list = await this.userRepository.find({
+      where: { ...screenData, id: Not(userId) },
+      relations: ['department', 'role'],
+      skip,
+      take,
+    });
+    list.forEach((user) => {
+      user.createTime = formatDate(user.createTime) as unknown as Date;
+      user.updateTime = formatDate(user.updateTime) as unknown as Date;
+    });
+    const total = await this.userRepository.count({
+      where: { ...screenData, id: Not(userId) },
+    });
+    return {
+      list,
+      page: pageData.page || 1,
+      total,
+    };
+  }
+
   findOne(id: string): Promise<User> {
     return this.userRepository.findOne({ where: { id } });
   }
@@ -195,6 +222,18 @@ export class UserService {
     const user = await this.findOne(id);
     if (!user) throw new BadRequestException('用户不存在');
     const newUser = this.userRepository.merge(user, { status });
+    return this.userRepository.save(newUser);
+  }
+
+  async changePassword(id: string, data: ChangePasswordDto) {
+    const user = await this.findOne(id);
+    if (!user) throw new BadRequestException('用户不存在');
+    const { oldPassword, newPassword } = data;
+    if (user.password !== md5(oldPassword))
+      throw new BadRequestException('原密码错误');
+    const newUser = this.userRepository.merge(user, {
+      password: md5(newPassword),
+    });
     return this.userRepository.save(newUser);
   }
 
