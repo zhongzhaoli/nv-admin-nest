@@ -50,8 +50,13 @@ export class RouteService {
   }
 
   async remove(id: string) {
-    const role = await this.findOne(id);
-    if (!role) throw new BadRequestException('找不到此角色');
+    const route = await this.routeRepository.findOne({
+      where: { id },
+      relations: ['roles'],
+    });
+    if (!route) throw new BadRequestException('找不到此路由');
+    if (route.roles && route.roles.length)
+      throw new BadRequestException('路由已被角色绑定，无法删除');
     const result: DeleteResult = await this.routeRepository.delete(id);
     if (result.affected === 0) {
       throw new BadRequestException(`删除失败`);

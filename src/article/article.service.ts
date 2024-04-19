@@ -3,7 +3,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { User } from 'src/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { Article } from './article.entity';
 import { formatDate, timeAgo } from 'src/utils/dateTime.helper';
 import { pageListDataProps } from 'src/types/pageListBody.type';
@@ -29,21 +29,24 @@ export class ArticleService {
     const { title, content, whoType, deptList, userList } = createArticleDto;
     let deptRealList = [];
     let userRealList = [];
-    if (whoType !== 'all') {
-      const deptGetAll = deptList.map(async (item) => {
-        return await this.deptRepository.findOne({
-          where: { id: whoType === 'can' ? item : Not(item) },
-        });
+    if (whoType === 'can') {
+      userRealList = await this.userRepository.find({
+        where: { id: In(userList) },
       });
-      const userGetAll = userList.map(async (item) => {
-        return await this.userRepository.findOne({
-          where: { id: whoType === 'can' ? item : Not(item) },
-        });
+      deptRealList = await this.deptRepository.find({
+        where: { id: In(deptList) },
       });
-      deptRealList = await Promise.all(deptGetAll);
-      userRealList = await Promise.all(userGetAll);
+    }
+    if (whoType === 'cant') {
+      userRealList = await this.userRepository.find({
+        where: { id: Not(In(userList)) },
+      });
+      deptRealList = await this.deptRepository.find({
+        where: { id: Not(In(deptList)) },
+      });
     }
     console.log(deptRealList);
+    console.log(userRealList);
     const newArticle = this.articleRepository.create({
       title,
       content,
@@ -100,6 +103,7 @@ export class ArticleService {
       where: { id: id },
       relations: ['createUser'],
     })) as ResPonseArticleOneProps;
+    if (!article) throw new BadRequestException('通知不存在');
     article.createTime = formatDate(article.createTime) as unknown as Date;
     article.updateTime = formatDate(article.updateTime) as unknown as Date;
     article.isAdmin = article.createUser.id === user.id;

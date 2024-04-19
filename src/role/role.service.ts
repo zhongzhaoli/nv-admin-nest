@@ -91,8 +91,13 @@ export class RoleService {
   }
 
   async remove(id: string): Promise<any> {
-    const role = await this.findOne(id);
+    const role = await this.roleRepository.findOne({
+      where: { id },
+      relations: ['users'],
+    });
     if (!role) throw new BadRequestException('找不到此角色');
+    if (role.users && role.users.length)
+      throw new BadRequestException('角色已被用户绑定，无法删除');
     const result: DeleteResult = await this.roleRepository.delete(id);
     if (result.affected === 0) {
       throw new BadRequestException(`删除失败`);

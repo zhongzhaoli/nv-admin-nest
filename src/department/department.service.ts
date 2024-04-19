@@ -109,8 +109,13 @@ export class DepartmentService {
   }
 
   async remove(id: string): Promise<any> {
-    const role = await this.findOne(id);
-    if (!role) throw new BadRequestException('找不到此部门');
+    const dept = await this.deptRepository.findOne({
+      where: { id },
+      relations: ['users'],
+    });
+    if (!dept) throw new BadRequestException('找不到此部门');
+    if (dept.users && dept.users.length)
+      throw new BadRequestException('部门已被用户绑定，无法删除');
     const result: DeleteResult = await this.deptRepository.delete(id);
     if (result.affected === 0) {
       throw new BadRequestException(`删除失败`);
